@@ -41,7 +41,8 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://s3.amazonaws.com/uploads.hipchat.com/14477/52355/3FPhAWN23KWiUBc/google%20search%203.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+![Image of Demo]
+(https://s3.amazonaws.com/uploads.hipchat.com/14477/52355/3FPhAWN23KWiUBc/google%20search%203.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
