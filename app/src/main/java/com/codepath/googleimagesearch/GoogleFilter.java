@@ -14,8 +14,12 @@ public class GoogleFilter {
     String siteFilter;
 
     public GoogleFilter() {
-        this.selectedImageSizeIndex = 0;
+        this.setDefaults();
+    }
+
+    public void setDefaults() {
         this.selectedColorFilterIndex = 0;
+        this.selectedImageTypeIndex = 0;
         this.selectedImageTypeIndex = 0;
         this.siteFilter = "";
     }

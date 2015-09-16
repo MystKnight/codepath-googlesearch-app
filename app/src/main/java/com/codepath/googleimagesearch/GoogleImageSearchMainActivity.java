@@ -85,6 +85,9 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
             public boolean onQueryTextSubmit(String query) {
                 // Set the new search query and reset the list
                 searchQuery = query;
+
+                // Reset search filters and adapter
+                googleFilter.setDefaults();
                 googleImageAdapter.clear();
                 googleImageAdapter.heightRatios.clear();
 
