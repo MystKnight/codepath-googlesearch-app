@@ -41,7 +41,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![Walkthrough](https://s3.amazonaws.com/uploads.hipchat.com/14477/52355/pHhghDhDGNKW0kL/googlesearch3.gif)
+![Walkthrough](https://s3.amazonaws.com/uploads.hipchat.com/14477/52355/Ee1rTw2fAcED7g9/googlesearch5.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
