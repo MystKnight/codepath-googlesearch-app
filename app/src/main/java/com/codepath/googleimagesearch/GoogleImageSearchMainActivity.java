@@ -32,23 +32,27 @@ import retrofit.Retrofit;
 
 public class GoogleImageSearchMainActivity extends AppCompatActivity implements GoogleImageFiltersDialog.GoogleImageFiltersDialogListener {
 
-    GoogleImageAdapter googleImageAdapter;
-
-    String searchQuery = "painting";
-    GoogleFilter googleFilter = new GoogleFilter();
+    private GoogleImageAdapter googleImageAdapter;
+    private String searchQuery = "painting";
+    private GoogleFilter googleFilter = new GoogleFilter();
+    private static int MAX_PAGE = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_image_search_main);
 
+        // Set app icon
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        // Initialize all the things
         List<GoogleImage> googleImages = new ArrayList<GoogleImage>();
         this.googleImageAdapter = new GoogleImageAdapter(this, googleImages);
 
         final StaggeredGridView gvPhotos = (StaggeredGridView)findViewById(R.id.gv_photos);
         gvPhotos.setAdapter(this.googleImageAdapter);
-
-        this.loadData(0);
 
         gvPhotos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -66,11 +70,14 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 // Apparently Google doesn't want to paginate anymore than 8 pages
-                if (page < 7) {
+                if (page < MAX_PAGE) {
                     loadData(page);
                 }
             }
         });
+
+        // Load initial set of data
+        this.loadData(0);
     }
 
     @Override
@@ -79,7 +86,7 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
 
         // Add the action search bar to the top menu
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+        final SearchView searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -90,6 +97,9 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
                 googleFilter.setDefaults();
                 googleImageAdapter.clear();
                 googleImageAdapter.heightRatios.clear();
+
+                // Hide keyboard
+                searchView.clearFocus();
 
                 // Load in the new data
                 loadData(0);
@@ -107,6 +117,11 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -115,11 +130,11 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            // Show dialog fragment
             FragmentManager fragmentManager = getSupportFragmentManager();
-
-            // TODO: Can pass in the currently set filters for better UX
-            GoogleImageFiltersDialog googleImageFiltersDialog = GoogleImageFiltersDialog.newInstance("Advanced Filters");
+            GoogleImageFiltersDialog googleImageFiltersDialog = GoogleImageFiltersDialog.newInstance(this.googleFilter);
             googleImageFiltersDialog.show(fragmentManager, "image_filter");
+
             return true;
         }
 
@@ -133,6 +148,7 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
         // When we get new filters back, we want to clear our our existing adapter and start fresh
         googleImageAdapter.clear();
         googleImageAdapter.heightRatios.clear();
+
         this.loadData(0);
     }
 
@@ -146,11 +162,13 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
         int start = currentPage * 8;
         Map filters = this.googleFilter.buildFilters();
 
+        // Build retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://ajax.googleapis.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        // Call the google image service
         GoogleImageService googleImageService = retrofit.create(GoogleImageService.class);
         Call<GoogleImageResponse> googleImageResponse = googleImageService.getImages(
                 "1.0",
@@ -159,6 +177,7 @@ public class GoogleImageSearchMainActivity extends AppCompatActivity implements 
                 start,
                 filters);
 
+        // Callback
         googleImageResponse.enqueue(new Callback<GoogleImageResponse>() {
             @Override
             public void onResponse(Response<GoogleImageResponse> response) {

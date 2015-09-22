@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,19 +19,17 @@ import android.widget.Spinner;
  */
 public class GoogleImageFiltersDialog extends DialogFragment {
 
-    public GoogleFilter googleFilter = new GoogleFilter();
-
     public GoogleImageFiltersDialog() {}
 
     public interface GoogleImageFiltersDialogListener {
         void onFinishDialog(GoogleFilter googleFilter);
     }
 
-    public static GoogleImageFiltersDialog newInstance(String title) {
+    public static GoogleImageFiltersDialog newInstance(GoogleFilter googleFilter) {
         GoogleImageFiltersDialog dialog = new GoogleImageFiltersDialog();
 
         Bundle args = new Bundle();
-        args.putString("title", title);
+        args.putSerializable("google_filter", googleFilter);
 
         dialog.setArguments(args);
 
@@ -40,11 +39,12 @@ public class GoogleImageFiltersDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        String title = getArguments().getString("title");
+        final GoogleFilter googleFilter = (GoogleFilter)getArguments().getSerializable("google_filter");
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.image_filter, container);
 
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         // Register tap events to all the spinners
         Spinner sImageSizes = (Spinner)view.findViewById(R.id.s_image_size);
@@ -53,10 +53,11 @@ public class GoogleImageFiltersDialog extends DialogFragment {
                 R.array.s_image_size,
                 android.R.layout.simple_spinner_item);
         sImageSizes.setAdapter(imageSizeAdapter);
+        sImageSizes.setSelection(googleFilter.getSelectedImageSizeIndex());
         sImageSizes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                googleFilter.selectedImageSizeIndex = position;
+                googleFilter.setSelectedImageSizeIndex(position);
             }
 
             @Override
@@ -71,10 +72,11 @@ public class GoogleImageFiltersDialog extends DialogFragment {
                 R.array.s_color_filter,
                 android.R.layout.simple_spinner_item);
         sColorFilter.setAdapter(colorAdapter);
+        sColorFilter.setSelection(googleFilter.getSelectedColorFilterIndex());
         sColorFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                googleFilter.selectedColorFilterIndex = position;
+                googleFilter.setSelectedColorFilterIndex(position);
             }
 
             @Override
@@ -89,10 +91,11 @@ public class GoogleImageFiltersDialog extends DialogFragment {
                 R.array.s_img_type,
                 android.R.layout.simple_spinner_item);
         sImageType.setAdapter(imageTypeAdapter);
+        sImageType.setSelection(googleFilter.getSelectedImageTypeIndex());
         sImageType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                googleFilter.selectedImageTypeIndex = position;
+                googleFilter.setSelectedImageTypeIndex(position);
             }
 
             @Override
@@ -101,16 +104,21 @@ public class GoogleImageFiltersDialog extends DialogFragment {
             }
         });
 
-        EditText siteFilter = (EditText)view.findViewById(R.id.et_site_filter);
-        googleFilter.siteFilter = siteFilter.getText().toString();
+        final EditText siteFilter = (EditText)view.findViewById(R.id.et_site_filter);
+        siteFilter.setText(googleFilter.getSiteFilter());
 
         // Done is pressed
         Button done = (Button)view.findViewById(R.id.btn_done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                googleFilter.setSiteFilter(siteFilter.getText().toString());
+
+                // Set callback
                 GoogleImageFiltersDialogListener listener = (GoogleImageFiltersDialogListener) getActivity();
                 listener.onFinishDialog(googleFilter);
+
+                // Dismiss the dialog
                 getDialog().dismiss();
             }
         });

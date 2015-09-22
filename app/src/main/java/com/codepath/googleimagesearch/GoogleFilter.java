@@ -1,17 +1,18 @@
 package com.codepath.googleimagesearch;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by yahuijin on 9/13/15.
  */
-public class GoogleFilter {
+public class GoogleFilter implements Serializable {
 
-    int selectedImageSizeIndex;
-    int selectedColorFilterIndex;
-    int selectedImageTypeIndex;
-    String siteFilter;
+    private int selectedImageSizeIndex;
+    private int selectedColorFilterIndex;
+    private int selectedImageTypeIndex;
+    private String siteFilter;
 
     public GoogleFilter() {
         this.setDefaults();
@@ -19,7 +20,7 @@ public class GoogleFilter {
 
     public void setDefaults() {
         this.selectedColorFilterIndex = 0;
-        this.selectedImageTypeIndex = 0;
+        this.selectedImageSizeIndex = 0;
         this.selectedImageTypeIndex = 0;
         this.siteFilter = "";
     }
@@ -49,5 +50,37 @@ public class GoogleFilter {
         }
 
         return filters;
+    }
+
+    public int getSelectedImageSizeIndex() {
+        return selectedImageSizeIndex;
+    }
+
+    public void setSelectedImageSizeIndex(int selectedImageSizeIndex) {
+        this.selectedImageSizeIndex = selectedImageSizeIndex;
+    }
+
+    public int getSelectedColorFilterIndex() {
+        return selectedColorFilterIndex;
+    }
+
+    public void setSelectedColorFilterIndex(int selectedColorFilterIndex) {
+        this.selectedColorFilterIndex = selectedColorFilterIndex;
+    }
+
+    public int getSelectedImageTypeIndex() {
+        return selectedImageTypeIndex;
+    }
+
+    public void setSelectedImageTypeIndex(int selectedImageTypeIndex) {
+        this.selectedImageTypeIndex = selectedImageTypeIndex;
+    }
+
+    public String getSiteFilter() {
+        return siteFilter;
+    }
+
+    public void setSiteFilter(String siteFilter) {
+        this.siteFilter = siteFilter;
     }
 }

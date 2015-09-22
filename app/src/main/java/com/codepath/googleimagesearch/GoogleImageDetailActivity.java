@@ -82,7 +82,7 @@ public class GoogleImageDetailActivity extends AppCompatActivity {
     public Uri getLocalBitmapUri(TouchImageView imageView) {
         // Extract Bitmap from ImageView drawable
         Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
+        Bitmap bmp;
         if (drawable instanceof BitmapDrawable){
             bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         } else {
@@ -95,9 +95,11 @@ public class GoogleImageDetailActivity extends AppCompatActivity {
             File file =  new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), "share_image_" + System.currentTimeMillis() + ".png");
             file.getParentFile().mkdirs();
+
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
+
             bmpUri = Uri.fromFile(file);
         } catch (IOException e) {
             e.printStackTrace();

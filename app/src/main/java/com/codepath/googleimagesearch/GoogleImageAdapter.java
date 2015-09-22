@@ -37,6 +37,7 @@ public class GoogleImageAdapter extends ArrayAdapter<GoogleImage> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.image_row, parent, false);
 
+            // Store image lookup
             vh = new ViewHolder();
             vh.ivPhoto = (DynamicHeightImageView)convertView.findViewById(R.id.iv_photo);
             convertView.setTag(vh);
@@ -44,6 +45,7 @@ public class GoogleImageAdapter extends ArrayAdapter<GoogleImage> {
             vh = (ViewHolder)convertView.getTag();
         }
 
+        // Cache the image ratios so we do not need to compute these again
         double imageRatio = heightRatios.get(position, 0.0);
         if (imageRatio == 0) {
             imageRatio = (double)Integer.parseInt(googleImage.height) / Integer.parseInt(googleImage.width);
